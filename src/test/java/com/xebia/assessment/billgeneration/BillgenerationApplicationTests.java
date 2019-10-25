@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.http.client.ClientProtocolException;
@@ -23,7 +22,7 @@ import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 import com.xebia.assessment.BillGeneration.service.UserDiscountService;
 
 /**
- * @author ayushi.shukla
+ * @author prashansa.shukla
  *
  */
 @RunWith(SpringRunner.class)

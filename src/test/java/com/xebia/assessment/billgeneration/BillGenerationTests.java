@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpStatusCodeException;
 
+import com.xebia.assessment.BillGeneration.BillGenerationApplication;
 import com.xebia.assessment.BillGeneration.controllers.BillGenerationController;
 import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 
