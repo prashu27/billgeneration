@@ -1,8 +1,4 @@
-# billgeneration
-## Table of contents
-* [General info](#General info)
-* [Technologies](#technologies)
-* [Setup](#setup)
+# billgeneration 
 
 ## General info
 this project is a Retail store's bill generation project to provide discounts on certain criteria
@@ -43,11 +39,9 @@ expected Json response:
 
 ## RUN the Junits
 
-git clone https://github.com/prashu27/billgeneration
-import project to  eclipse workspace
-run  maven  clean and build command
-run the BillGenerationApplication
-run the junit test cases
+run  class annotated as @SpringBootTest
+right click on class ->run as Junit
+
 
 ## Code Coverage  
 install java code coverage eclemma 3.1.2 from  eclipse marketplace
