@@ -21,7 +21,7 @@ This project is a Retail store's bill generation project to provide discounts on
 * Choose the Spring Boot Application file (search for @SpringBootApplication)
 * Right Click on the file and Run as Java Application
 * open postman app
-* run  a post  request on http://localhost:8080/store/bill
+* run  a GET  request on http://localhost:8080/store/bill
   * provide below input as json body :
   {
 	"userType" :	"CUSTOMER",
