@@ -1,61 +1,138 @@
 package com.xebia.assessment.BillGeneration;
 
 import static org.junit.Assert.assertEquals;
-
-import javax.print.attribute.standard.Media;
-
-import org.apache.http.client.methods.RequestBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.HttpStatusCodeException;
-
-import com.xebia.assessment.BillGeneration.BillGenerationApplication;
-import com.xebia.assessment.BillGeneration.controllers.BillGenerationController;
 import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(value = BillGenerationController.class,secure=false)
-@ContextConfiguration(classes = BillGenerationApplication.class, loader = AnnotationConfigContextLoader.class)
-
+/**
+ * @author Prashansa.shukla
+ *
+ * BillGenerationTests Class contains Junit test cases for all the possible scenarios to
+ *         generate a bill
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class BillGenerationTests {
-@Autowired
-private MockMvc mockMvc;
 
-@MockBean
-private CustomerBillingData customerBillingData;
+	@Autowired
+	private MockMvc mockMvc;
 
-@MockBean
-private BillGenerationApplication  bill;
+	@InjectMocks
+	private CustomerBillingData customerBillingData;
 
-CustomerBillingData mockCust =  new CustomerBillingData("Employee", 1, 3, "NA");
-	
-String mockBillDataJson = "{\"userType\" : \"CUSTOMER \" ,\"userExperience\" : \"1 \" ,\"billAmt\" : \"0 \",\"billType\" : \"abc \" }";
+	CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
 
-@Test
-public void generateBillTest() throws Exception {
-	CustomerBillingData mockCust =  new CustomerBillingData("Employee", 1, 3, "NA");
+	String mockBillDataJson = "{\"userType\" : \"CUSTOMER \" ,\"userExperience\" : \"1 \" ,\"billAmt\" : \"100\",\"billType\" : \"abc \" }";
 
-	Mockito.when(Mockito.any(CustomerBillingData.class)).thenReturn(mockCust);
-	MockHttpServletRequestBuilder request  =MockMvcRequestBuilders.get("/store/bill").accept(org.springframework.http.MediaType.APPLICATION_JSON).content(mockBillDataJson).contentType(org.springframework.http.MediaType.APPLICATION_JSON);
-	
-	MvcResult result  = mockMvc.perform(request).andReturn();
-	MockHttpServletResponse response = result.getResponse();
-	System.out.println(response.getContentAsString());
-	assertEquals(HttpStatus.CREATED.value(),response.getStatus());
-}
+	@Test
+	public void generateBillNoDiscountTest() throws Exception {
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson).contentType(MediaType.APPLICATION_JSON);
 
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void generateBillEmployeeDiscountTest() throws Exception {
+
+		String mockBillDataJson1 = "{\"userType\" : \"EMPLOYEE\" ,\"userExperience\" : \"1 \" ,\"billAmt\" : \"100\",\"billType\" : \"abc \" }";
+
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void generateBillForTwoYrsOldCustomerTest() throws Exception {
+
+		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"2\" ,\"billAmt\" : \"100\",\"billType\" : \"abc \" }";
+
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void generateBillForDefaultDiscountTest() throws Exception {
+
+		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"120\",\"billType\" : \"abc \" }";
+
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	@Test
+	public void generateBillForGroceryDiscountTest() throws Exception {
+
+		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"120\",\"billType\" : \"GROCERY\" }";
+
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		// Mockito.when(Mockito.any(CustomerBillingData.class)).thenReturn(mockCust);
+		// Mockito.when(Mockito.anyInt()).thenReturn(45);
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.OK.value(), response.getStatus());
+	}
+
+	// User will get below response while running giving the Amt as 0.0
+	/*
+	 * Status = 400 Error message = null Headers =
+	 * {Content-Type=[application/json;charset=UTF-8]} Content type =
+	 * application/json;charset=UTF-8 Body =
+	 * {"timestamp":1572294382369,"message":"billAmt 0.0","details":
+	 * "uri=/store/bill"}
+	 */
+	@Test
+	public void generateBillForZeroAmtPayTest() throws Exception {
+
+		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"0\",\"billType\" : \"GROCERY\" }";
+
+		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
+				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
+
+		MvcResult result = mockMvc.perform(request).andReturn();
+		MockHttpServletResponse response = result.getResponse();
+		System.out.println(response.getContentAsString());
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+	}
 
 }
