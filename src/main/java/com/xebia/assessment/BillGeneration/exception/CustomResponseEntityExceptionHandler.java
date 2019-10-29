@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 /**
  * @author prashansa.shukla
  *
+ *CustomResponseEntityExceptionHandler to handle the exceptions globally
  */
 @RestController
 @ControllerAdvice
@@ -26,15 +27,10 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 	 */
 	@ExceptionHandler(Exception.class)
 	public final  ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest req){
-	ExceptionResponse response=	new ExceptionResponse(new Date(), ex.getMessage(), req.getDescription(false));
-		return  new ResponseEntity(response,HttpStatus.INTERNAL_SERVER_ERROR);
-		
+		ExceptionResponse response=	new ExceptionResponse(new Date(), ex.getMessage(), req.getDescription(false));
+		return  new ResponseEntity<Object>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	/**
-	 * @param ex
-	 * @param req
-	 * @return
-	 */
+
 	/**
 	 * @param ex
 	 * @param req
@@ -42,9 +38,8 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 	 */
 	@ExceptionHandler(InvalidBillException.class)
 	public final  ResponseEntity<Object> handleBadRequestExceptions(Exception ex, WebRequest req){
-	ExceptionResponse response=	new ExceptionResponse(new Date(), ex.getMessage(), req.getDescription(false));
-		return  new ResponseEntity(response,HttpStatus.BAD_REQUEST);
-		
+		ExceptionResponse response=	new ExceptionResponse(new Date(), ex.getMessage(), req.getDescription(false));
+		return  new ResponseEntity<Object>(response,HttpStatus.BAD_REQUEST);
 	}
-	
+
 }

@@ -1,14 +1,16 @@
 package com.xebia.assessment.BillGeneration.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.xebia.assessment.BillGeneration.exception.InvalidBillException;
 import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 import com.xebia.assessment.BillGeneration.service.UserDiscountService;
@@ -16,71 +18,39 @@ import com.xebia.assessment.BillGeneration.service.UserDiscountService;
 /**
  * @author prashansa.shukla
  *
- * @param <netbillingAmount>
+ *         BillGenerationController class has all the URI mapping and the
+ *         business logic
+ * 
  */
 @RestController
+public class BillGenerationController {
 
-/* @RequestMapping("/store") */
-public class BillGenerationController<netbillingAmount> {
 	@Autowired
 	UserDiscountService discountService;
-	
-	public BillGenerationController() {
-		
-	}
-	
 
-	/*
-	 * @GetMapping("/store/bill") public double getNetPayableAmt(@RequestBody
-	 * CustomerBillingData billData) {
-	 * 
-	 * System.out.println("data IS :"+ billData); double netbillingAmount
-	 * =discountService.getApplicableDiscunt(billData); return netbillingAmount;
-	 * 
-	 * 
-	 * }
-	 */
+	private static final  Logger logger = LoggerFactory.getLogger(BillGenerationController.class);
+
+	public BillGenerationController() {
+	}
 
 	/**
-	 * this method will execute  first whenever the user  will  call '/store/bill' URI
+	 * this method will execute first whenever the user will call '/store/bill' URI
+	 * the core application will kicks in when the below method get called
+	 * 
 	 * @param billData
 	 * @return
 	 */
 	@GetMapping("/store/bill")
-	public CustomerBillingData getNetPayableAmt(@RequestBody CustomerBillingData  billData) {
+	public CustomerBillingData getNetPayableAmt(@RequestBody CustomerBillingData billData) {
+		logger.info("request  details :" + billData);
 		
-		System.out.println("data IS :"+ billData);
-		if(billData.getBillAmt()==0) {
-			throw new InvalidBillException("billAmt "+ billData.getBillAmt());
+		if (billData.getBillAmt() == 0) {
+			throw new InvalidBillException("billAmt " + billData.getBillAmt());
 		}
 		
-		double netbillingAmount =discountService.getApplicableDiscunt(billData);
-		
-		 billData.setAmtAfterDiscount(netbillingAmount);
-			
-		 ResponseEntity<CustomerBillingData> res = new ResponseEntity<>(HttpStatus.ACCEPTED);
-		
+		double netbillingAmount = discountService.getApplicableDiscunt(billData);
+		billData.setAmtAfterDiscount(netbillingAmount);
 		return billData;
-		
-		
 	}
-	
-	
-	/**
-	 * @return
-	 */
-	@GetMapping("/hello")
-	public String helloWorld() {
-			System.out.println("Yess"+(150/100)*5);
-			return "Hello";
-			
-			
-		}
-	
-	
-	
-	
-	
-	
-}
 
+}

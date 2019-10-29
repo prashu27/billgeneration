@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 
+
 /**
  * @author Prashansa.shukla
  *
@@ -28,6 +29,9 @@ import com.xebia.assessment.BillGeneration.model.CustomerBillingData;
 @AutoConfigureMockMvc
 public class BillGenerationTests {
 
+	private static final  org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BillGenerationTests.class);
+
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -38,9 +42,12 @@ public class BillGenerationTests {
 
 	String mockBillDataJson = "{\"userType\" : \"CUSTOMER \" ,\"userExperience\" : \"1 \" ,\"billAmt\" : \"100\",\"billType\" : \"abc \" }";
 
+	/**
+	 * @throws Exception
+	 * generateBillNoDiscountTest to test the CUSTOMER  discount when userExp<2
+	 */
 	@Test
 	public void generateBillNoDiscountTest() throws Exception {
-		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
 				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson).contentType(MediaType.APPLICATION_JSON);
 
@@ -50,12 +57,15 @@ public class BillGenerationTests {
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 
+	/**
+	 * @throws Exception
+	 * generateBillEmployeeDiscountTest to test the EMPLOYEE  discount when userExp<2
+	 */
 	@Test
 	public void generateBillEmployeeDiscountTest() throws Exception {
 
 		String mockBillDataJson1 = "{\"userType\" : \"EMPLOYEE\" ,\"userExperience\" : \"1 \" ,\"billAmt\" : \"100\",\"billType\" : \"abc \" }";
 
-		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
 				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
 
@@ -65,6 +75,10 @@ public class BillGenerationTests {
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 
+	/*
+	 * @throws Exception
+	 * generateBillForTwoYrsOldCustomerTest to test the CUSTOMER  discount when userExp>2
+	 */
 	@Test
 	public void generateBillForTwoYrsOldCustomerTest() throws Exception {
 
@@ -76,33 +90,37 @@ public class BillGenerationTests {
 
 		MvcResult result = mockMvc.perform(request).andReturn();
 		MockHttpServletResponse response = result.getResponse();
-		System.out.println(response.getContentAsString());
+		logger.info( "Response content: " +response.getContentAsString());
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 
+	/**
+	 * @throws Exception
+	 * generateBillForDefaultDiscountTest for CUSTOMER and Bill Amount >100
+	 */
 	@Test
 	public void generateBillForDefaultDiscountTest() throws Exception {
 
 		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"120\",\"billType\" : \"abc \" }";
 
-		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
 				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(request).andReturn();
 		MockHttpServletResponse response = result.getResponse();
-		System.out.println(response.getContentAsString());
+		logger.info( "Response content: " +response.getContentAsString());
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 
+	/**
+	 * @throws Exception
+	 * generateBillForGroceryDiscountTest when  BillType=Grocery
+	 */
 	@Test
 	public void generateBillForGroceryDiscountTest() throws Exception {
 
 		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"120\",\"billType\" : \"GROCERY\" }";
 
-		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
-		// Mockito.when(Mockito.any(CustomerBillingData.class)).thenReturn(mockCust);
-		// Mockito.when(Mockito.anyInt()).thenReturn(45);
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
 				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
 
@@ -112,27 +130,21 @@ public class BillGenerationTests {
 		assertEquals(HttpStatus.OK.value(), response.getStatus());
 	}
 
-	// User will get below response while running giving the Amt as 0.0
-	/*
-	 * Status = 400 Error message = null Headers =
-	 * {Content-Type=[application/json;charset=UTF-8]} Content type =
-	 * application/json;charset=UTF-8 Body =
-	 * {"timestamp":1572294382369,"message":"billAmt 0.0","details":
-	 * "uri=/store/bill"}
+	/**
+	 * @throws Exception
+	 * generateBillForZeroAmtPayTest when  bill Amt is 0.0
 	 */
 	@Test
 	public void generateBillForZeroAmtPayTest() throws Exception {
 
 		String mockBillDataJson1 = "{\"userType\" : \"CUSTOMER\" ,\"userExperience\" : \"1\" ,\"billAmt\" : \"0\",\"billType\" : \"GROCERY\" }";
-
-		CustomerBillingData mockCust = new CustomerBillingData("Employee", 1, 3, "NA");
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/store/bill")
 				.accept(MediaType.APPLICATION_JSON).content(mockBillDataJson1).contentType(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(request).andReturn();
 		MockHttpServletResponse response = result.getResponse();
 		System.out.println(response.getContentAsString());
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
+		assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
 	}
 
 }

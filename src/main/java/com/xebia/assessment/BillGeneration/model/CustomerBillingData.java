@@ -2,18 +2,17 @@ package com.xebia.assessment.BillGeneration.model;
 
 /**
  * @author prashansa.shukla
+ *  
+ * Created model class for data mapping and sending back to client which has been shown as the JSON response
  *
  */
 public class CustomerBillingData {
-	
-	String userType;
-	double userExperience;
-	double billAmt;
-	String billType;
-	/**
-	 * 
-	 */
-	double amtAfterDiscount;
+
+	private String userType;
+	private double userExperience;
+	private double billAmt;
+	private String billType;
+	private double amtAfterDiscount;
 
 	public double getAmtAfterDiscount() {
 		return amtAfterDiscount;
@@ -26,7 +25,7 @@ public class CustomerBillingData {
 	public CustomerBillingData() {
 		super();
 	}
-	
+
 	public CustomerBillingData(String userType, double userExperience, double billAmt, String billType) {
 		super();
 		this.userType = userType;

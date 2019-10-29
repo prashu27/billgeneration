@@ -18,12 +18,12 @@ public class ExceptionResponse extends ResponseEntityExceptionHandler {
 	 * @param details
 	 */
 	public ExceptionResponse(Date timestamp, String message, String details) {
-	
+
 		this.timestamp = timestamp;
 		this.message = message;
 		this.details = details;
 	}
-	
+
 	public Date getTimestamp() {
 		return timestamp;
 	}
